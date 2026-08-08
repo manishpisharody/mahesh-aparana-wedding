@@ -3,13 +3,13 @@ const weddingConfig = {
   brideName: "Aparna", groomName: "Mahesh",
   weddingDate: "2026-08-28T09:30:00+05:30",
   thalikettuVenue: "Vadakkunnathan",
-  weddingVenue: "PTRL Mahal, Kattungachira, Irinjalakuda", weddingTime: "9:30 AM",
+  weddingVenue: "PTR Mahal, Kattungachira, Irinjalakuda", weddingTime: "From 10:00 AM",
   receptionVenue: "PCK Auditorium, Vellangallur", receptionTime: "Time to be updated",
-  whatsappNumber: "UPDATE_NUMBER",
-  websiteUrl: "",
+  whatsappNumber: "919567435359",
+  websiteUrl: "https://manishpisharody.github.io/mahesh-aparana-wedding/",
   mapLinks: {
     thalikettu: "https://www.google.com/maps/search/?api=1&query=Vadakkunnathan+Temple+Thrissur",
-    wedding: "https://www.google.com/maps/search/?api=1&query=PTRL+Mahal+Kattungachira+Irinjalakuda",
+    wedding: "https://www.google.com/maps/search/?api=1&query=PTR+Mahal+Kattungachira+Irinjalakuda",
     reception: "https://www.google.com/maps/search/?api=1&query=PCK+Auditorium+Vellangallur"
   },
   musicPath: "assets/audio/wedding-music.mp3"
@@ -36,10 +36,46 @@ $('#openInvitation').addEventListener('click',()=>{
   launchPetals(true); playMusic(); setTimeout(()=>$('#welcome').remove(),1000);
 });
 
-const audio=$('#music'), musicIcon=$('#musicToggle i'); audio.volume=.28;
-function playMusic(){audio.play().then(()=>musicIcon.className='bi bi-volume-up').catch(()=>musicIcon.className='bi bi-volume-mute')}
-$('#musicToggle').addEventListener('click',()=>{if(audio.paused)playMusic();else{audio.pause();musicIcon.className='bi bi-volume-mute'}});
-audio.addEventListener('error',()=>{$('#musicToggle').title='Add music at assets/audio/wedding-music.mp3'});
+const audio=$('#music'), musicIcon=$('#musicToggle i');
+let ambientContext=null, ambientMaster=null, ambientTimer=null, ambientPlaying=false, melodyStep=0;
+
+function createTone(frequency,start,duration,volume=.035,type='sine'){
+  const oscillator=ambientContext.createOscillator(), gain=ambientContext.createGain();
+  oscillator.type=type; oscillator.frequency.value=frequency;
+  gain.gain.setValueAtTime(.0001,start);
+  gain.gain.exponentialRampToValueAtTime(volume,start+.35);
+  gain.gain.exponentialRampToValueAtTime(.0001,start+duration);
+  oscillator.connect(gain).connect(ambientMaster); oscillator.start(start); oscillator.stop(start+duration+.05);
+}
+
+function scheduleAmbientPhrase(){
+  if(!ambientPlaying)return;
+  const scale=[293.66,329.63,369.99,440,369.99,329.63,277.18,293.66];
+  const now=ambientContext.currentTime+.08;
+  createTone(scale[melodyStep%scale.length],now,3.2,.045,'sine');
+  if(melodyStep%2===0)createTone(scale[(melodyStep+2)%scale.length]/2,now+.7,3.8,.018,'triangle');
+  melodyStep++;
+}
+
+function startAmbient(){
+  if(!ambientContext){
+    ambientContext=new (window.AudioContext||window.webkitAudioContext)();
+    ambientMaster=ambientContext.createGain(); ambientMaster.gain.value=.24;
+    const filter=ambientContext.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=1450;
+    ambientMaster.connect(filter).connect(ambientContext.destination);
+  }
+  ambientContext.resume(); ambientPlaying=true; scheduleAmbientPhrase();
+  if(!ambientTimer)ambientTimer=setInterval(scheduleAmbientPhrase,2800);
+  musicIcon.className='bi bi-volume-up';
+}
+
+function pauseAmbient(){
+  ambientPlaying=false; ambientContext?.suspend();
+  clearInterval(ambientTimer); ambientTimer=null; musicIcon.className='bi bi-volume-mute';
+}
+
+function playMusic(){startAmbient()}
+$('#musicToggle').addEventListener('click',()=>ambientPlaying?pauseAmbient():startAmbient());
 
 function updateCountdown(){
   const target=new Date(weddingConfig.weddingDate), now=new Date(), diff=target-now, grid=$('#countdownGrid');
@@ -53,12 +89,11 @@ window.addEventListener('scroll',()=>{const y=scrollY,h=document.documentElement
 $('#toTop').onclick=()=>scrollTo({top:0,behavior:'smooth'});
 
 $('#addCalendar').addEventListener('click',()=>{
-  const start='20260828T040000Z',end='20260828T113000Z',title=encodeURIComponent(`Wedding of ${weddingConfig.brideName} & ${weddingConfig.groomName}`),details=encodeURIComponent('Join us for our wedding celebration.'),location=encodeURIComponent(weddingConfig.weddingVenue);
+  const start='20260828T043000Z',end='20260828T153000Z',title=encodeURIComponent(`Wedding of ${weddingConfig.brideName} & ${weddingConfig.groomName}`),details=encodeURIComponent('Join us for our wedding celebration.'),location=encodeURIComponent(weddingConfig.weddingVenue);
   open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}`,'_blank','noopener');
 });
 
 function whatsappUrl(message, direct=false){const number=/^\d{8,15}$/.test(weddingConfig.whatsappNumber)?weddingConfig.whatsappNumber:'';return `https://wa.me/${direct?number:''}?text=${encodeURIComponent(message)}`}
-$('#rsvpForm').addEventListener('submit',e=>{e.preventDefault();const name=$('#guestName').value.trim(),count=$('#guestCount').value,status=$('input[name="attendance"]:checked').value,note=$('#guestMessage').value.trim();if(weddingConfig.whatsappNumber==='UPDATE_NUMBER'){$('#rsvpHint').textContent='Please update whatsappNumber in js/script.js before sending RSVPs.';return}const msg=`Hi, I am ${name}. I am ${status} the wedding on 28 August 2026${status==='attending'?` with ${count} guest(s)`:''}.${note?`\n\nMessage: ${note}`:''}`;open(whatsappUrl(msg,true),'_blank','noopener')});
 $('#shareButton').addEventListener('click',async()=>{const url=weddingConfig.websiteUrl||location.href,msg=`With great happiness, we invite you to join us for the wedding celebration of ${weddingConfig.brideName} & ${weddingConfig.groomName} on 28 August 2026. Your presence and blessings would mean a lot to us.`;if(navigator.share){try{await navigator.share({title:document.title,text:msg,url});return}catch(e){if(e.name==='AbortError')return}}open(whatsappUrl(`${msg}\n\n${url}`),'_blank','noopener')});
 
 const lightbox=$('#lightbox'); $$('.photo').forEach(b=>b.onclick=()=>{lightbox.querySelector('img').src=b.dataset.full;lightbox.classList.add('open');document.body.classList.add('locked')});

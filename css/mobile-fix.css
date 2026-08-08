@@ -171,3 +171,68 @@ footer strong i {
   .welcome h1 { font-size: clamp(2.65rem, 11.5vw, 3.5rem); }
   .hero h2 { font-size: clamp(3rem, 14vw, 4.8rem); }
 }
+
+/* Family wishes dedication */
+.family-wishes {
+  background:
+    radial-gradient(circle at 12% 20%, rgba(180, 135, 56, .09), transparent 28%),
+    radial-gradient(circle at 88% 82%, rgba(22, 59, 44, .08), transparent 30%),
+    var(--cream);
+  text-align: center;
+  padding-top: clamp(3rem, 6vw, 5rem);
+  padding-bottom: clamp(3rem, 6vw, 5rem);
+}
+.wishes-card {
+  width: min(100%, 720px);
+  margin: auto;
+  padding: clamp(1.8rem, 4vw, 2.8rem) 1.25rem;
+  border: 1px solid rgba(180, 135, 56, .55);
+  outline: 1px solid rgba(180, 135, 56, .2);
+  outline-offset: -11px;
+  background: rgba(255, 253, 247, .7);
+}
+.wishes-card .mini-ornament {
+  margin-bottom: .6rem;
+}
+.wishes-names {
+  margin: .7rem 0 1rem;
+  color: var(--green);
+  font-family: var(--script);
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.08;
+}
+.wishes-rule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem;
+  color: var(--gold);
+}
+.family-phone {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  margin: 0;
+  color: var(--green);
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .13em;
+  text-decoration: none;
+}
+.family-phones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .45rem 1.25rem;
+  margin-bottom: 1rem;
+}
+.family-phone i { color: var(--gold); }
+.family-phone:hover { color: var(--gold); }
+.wishes-rule::before,
+.wishes-rule::after {
+  content: "";
+  width: 54px;
+  height: 1px;
+  background: rgba(180, 135, 56, .6);
+}
+.wishes-rule span { font-size: .7rem; }
