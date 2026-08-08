@@ -12,7 +12,7 @@ const weddingConfig = {
     wedding: "https://www.google.com/maps/search/?api=1&query=PTR+Mahal+Kattungachira+Irinjalakuda",
     reception: "https://www.google.com/maps/search/?api=1&query=PCK+Auditorium+Vellangallur"
   },
-  musicPath: "assets/audio/wedding-music.mp3"
+  musicPath: "https://commons.wikimedia.org/wiki/Special:Redirect/file/Veena%20Kinhal%2C%20song%20Haratanaya%20Sree%2C%20from%20the%20album%20%27%22Tribute%20to%20Veena%20Raja%20Rao%22.ogg"
 };
 
 const $ = (s, root=document) => root.querySelector(s), $$ = (s, root=document) => [...root.querySelectorAll(s)];
@@ -39,33 +39,55 @@ $('#openInvitation').addEventListener('click',()=>{
 const audio=$('#music'), musicIcon=$('#musicToggle i');
 let ambientContext=null, ambientMaster=null, ambientTimer=null, ambientPlaying=false, melodyStep=0;
 
-function createTone(frequency,start,duration,volume=.035,type='sine'){
+function createTone(frequency,start,duration,volume=.035,type='sine',attack=.25){
   const oscillator=ambientContext.createOscillator(), gain=ambientContext.createGain();
   oscillator.type=type; oscillator.frequency.value=frequency;
   gain.gain.setValueAtTime(.0001,start);
-  gain.gain.exponentialRampToValueAtTime(volume,start+.35);
+  gain.gain.exponentialRampToValueAtTime(volume,start+attack);
   gain.gain.exponentialRampToValueAtTime(.0001,start+duration);
   oscillator.connect(gain).connect(ambientMaster); oscillator.start(start); oscillator.stop(start+duration+.05);
 }
 
 function scheduleAmbientPhrase(){
   if(!ambientPlaying)return;
-  const scale=[293.66,329.63,369.99,440,369.99,329.63,277.18,293.66];
+  /* A gentle Mohanam-inspired phrase: Sa, Ri, Ga, Pa, Dha. */
+  const phrase=[293.66,329.63,369.99,440,493.88,440,369.99,329.63,293.66,369.99,440,329.63];
   const now=ambientContext.currentTime+.08;
-  createTone(scale[melodyStep%scale.length],now,3.2,.045,'sine');
-  if(melodyStep%2===0)createTone(scale[(melodyStep+2)%scale.length]/2,now+.7,3.8,.018,'triangle');
+  const note=phrase[melodyStep%phrase.length];
+  /* Breath-like flute lead. */
+  createTone(note,now,2.65,.038,'sine',.42);
+  createTone(note*2.002,now+.03,2.2,.006,'sine',.5);
+  /* A light veena-style pluck on alternating phrases. */
+  if(melodyStep%2===0)createTone(phrase[(melodyStep+3)%phrase.length]/2,now+.62,1.55,.026,'triangle',.025);
+  /* Subtle fusion pulse, felt more than heard. */
+  if(melodyStep%4===0){createTone(73.42,now,1.1,.018,'sine',.015);createTone(110,now+.72,.8,.011,'sine',.015)}
   melodyStep++;
+}
+
+function createTamburaDrone(){
+  [146.83,220,293.66].forEach((frequency,index)=>{
+    const oscillator=ambientContext.createOscillator(),gain=ambientContext.createGain(),filter=ambientContext.createBiquadFilter();
+    oscillator.type=index===1?'triangle':'sine'; oscillator.frequency.value=frequency;
+    oscillator.detune.value=index===2?3:-2;
+    filter.type='lowpass'; filter.frequency.value=680;
+    gain.gain.value=index===0?.018:.008;
+    oscillator.connect(filter).connect(gain).connect(ambientMaster); oscillator.start();
+  });
 }
 
 function startAmbient(){
   if(!ambientContext){
     ambientContext=new (window.AudioContext||window.webkitAudioContext)();
-    ambientMaster=ambientContext.createGain(); ambientMaster.gain.value=.24;
-    const filter=ambientContext.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=1450;
+    ambientMaster=ambientContext.createGain(); ambientMaster.gain.value=.3;
+    const filter=ambientContext.createBiquadFilter(),delay=ambientContext.createDelay(),echo=ambientContext.createGain();
+    filter.type='lowpass'; filter.frequency.value=1750;
+    delay.delayTime.value=.28; echo.gain.value=.12;
     ambientMaster.connect(filter).connect(ambientContext.destination);
+    filter.connect(delay).connect(echo).connect(ambientContext.destination);
+    createTamburaDrone();
   }
   ambientContext.resume(); ambientPlaying=true; scheduleAmbientPhrase();
-  if(!ambientTimer)ambientTimer=setInterval(scheduleAmbientPhrase,2800);
+  if(!ambientTimer)ambientTimer=setInterval(scheduleAmbientPhrase,2350);
   musicIcon.className='bi bi-volume-up';
 }
 
@@ -74,8 +96,15 @@ function pauseAmbient(){
   clearInterval(ambientTimer); ambientTimer=null; musicIcon.className='bi bi-volume-mute';
 }
 
-function playMusic(){startAmbient()}
-$('#musicToggle').addEventListener('click',()=>ambientPlaying?pauseAmbient():startAmbient());
+function playMusic(){
+  audio.volume=.24;
+  audio.play().then(()=>musicIcon.className='bi bi-volume-up').catch(()=>startAmbient());
+}
+$('#musicToggle').addEventListener('click',()=>{
+  if(!audio.paused){audio.pause();musicIcon.className='bi bi-volume-mute';return}
+  if(ambientPlaying){pauseAmbient();return}
+  playMusic();
+});
 
 function updateCountdown(){
   const target=new Date(weddingConfig.weddingDate), now=new Date(), diff=target-now, grid=$('#countdownGrid');

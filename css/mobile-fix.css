@@ -236,3 +236,11 @@ footer strong i {
   background: rgba(180, 135, 56, .6);
 }
 .wishes-rule span { font-size: .7rem; }
+
+.music-credit {
+  margin-top: 1rem;
+  font-size: .55rem;
+  letter-spacing: .05em;
+  opacity: .58;
+}
+.music-credit a { color: inherit; }
