@@ -1,0 +1,173 @@
+.welcome-card {
+  width: min(calc(100% - 48px), 560px);
+  overflow: hidden;
+}
+
+@media (max-width: 699px) {
+  .welcome-card { padding-inline: .8rem; }
+  .welcome h1 { font-size: clamp(2.7rem, 12vw, 3.6rem); }
+  .welcome-card > p:not(.eyebrow) { font-size: .82rem; }
+  .welcome .eyebrow { font-size: .58rem; letter-spacing: .2em; }
+}
+
+/* Ganapathy preloader */
+.loader .mandala { display: none; }
+.ganapathy-loader {
+  width: 112px;
+  height: 120px;
+  margin: 0 auto .45rem;
+  color: var(--gold);
+  animation: ganapathyReveal 1.8s ease-in-out infinite alternate;
+  filter: drop-shadow(0 8px 15px rgba(184, 138, 62, .16));
+}
+.ganapathy-loader svg { width: 100%; height: 100%; overflow: visible; }
+.ganapathy-loader path,
+.ganapathy-loader circle {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ganapathy-loader circle { fill: currentColor; stroke: none; }
+.ganapathy-loader .tilak { stroke-width: 2.2; }
+@keyframes ganapathyReveal {
+  from { opacity: .62; transform: translateY(3px) scale(.97); }
+  to { opacity: 1; transform: translateY(-3px) scale(1.02); }
+}
+
+.ganapathy-loader { display: none; }
+.heart-loader {
+  height: 84px;
+  margin: 0 auto .35rem;
+  color: var(--gold);
+  font-family: Georgia, serif;
+  font-size: 5.1rem;
+  font-weight: 400;
+  line-height: 1;
+  filter: drop-shadow(0 7px 14px rgba(184, 138, 62, .18));
+  animation: heartPulse 1.65s ease-in-out infinite;
+}
+@keyframes heartPulse {
+  0%, 100% { opacity: .65; transform: scale(.92); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+
+/* Refined invitation typography and colour system */
+:root {
+  --display: "Bodoni Moda", Georgia, serif;
+  --script: "Allura", cursive;
+  --ink: #3d3a32;
+  --green: #163b2c;
+  --gold: #b48738;
+  --gold2: #ecd596;
+}
+
+body {
+  color: var(--ink);
+  font-weight: 400;
+}
+
+h2,
+h3 {
+  font-family: var(--serif);
+  letter-spacing: -.015em;
+}
+
+.section-head h2,
+.save-inner h2,
+.rsvp-copy h2,
+.blessing-frame h2 {
+  font-weight: 500;
+}
+
+.welcome h1,
+.hero h2 {
+  font-family: var(--display);
+  font-weight: 500;
+  letter-spacing: -.045em;
+}
+
+.welcome h1,
+.hero h2,
+.closing h2 {
+  color: #fffaf0;
+  text-shadow: 0 3px 22px rgba(4, 22, 14, .72);
+}
+
+.welcome h1 i,
+.hero h2 i,
+.signature,
+.footer-signature {
+  font-family: var(--script);
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--gold2);
+}
+
+.welcome h1 i,
+.hero h2 i {
+  font-size: clamp(2.7rem, 8vw, 4.6rem);
+  line-height: .75;
+}
+
+.hero-copy > p:not(.eyebrow),
+.welcome-card > p:not(.eyebrow),
+.closing-copy > p {
+  color: #fffdf7;
+  text-shadow: 0 2px 16px rgba(4, 22, 14, .82);
+}
+
+.hero-copy > p:not(.eyebrow) {
+  font-family: var(--serif);
+  font-size: clamp(1.25rem, 3.3vw, 1.7rem);
+  font-weight: 500;
+}
+
+.eyebrow {
+  color: #fff8e9;
+  text-shadow: 0 2px 12px rgba(4, 22, 14, .9);
+}
+
+.kicker,
+.event-label {
+  color: #9a6c22;
+  font-weight: 600;
+}
+
+.quote-strip div {
+  font-family: var(--display);
+  color: #fffaf1;
+}
+
+.date-lock strong,
+.event-card h3,
+.venue-card h3 {
+  font-family: var(--display);
+}
+
+.signature {
+  font-size: clamp(2.5rem, 7vw, 4rem);
+}
+
+.closing-copy > p {
+  font-family: var(--script);
+  font-size: clamp(2rem, 6vw, 3.25rem);
+  line-height: 1.05;
+}
+
+footer strong {
+  font-family: var(--display);
+  color: #fffaf0;
+}
+
+footer strong i {
+  font-family: var(--script);
+  font-size: 1.55em;
+  font-weight: 400;
+}
+
+@media (max-width: 699px) {
+  .welcome h1 { font-size: clamp(2.65rem, 11.5vw, 3.5rem); }
+  .hero h2 { font-size: clamp(3rem, 14vw, 4.8rem); }
+}
