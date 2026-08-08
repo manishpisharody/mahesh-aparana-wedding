@@ -4,7 +4,7 @@ const weddingConfig = {
   weddingDate: "2026-08-28T09:30:00+05:30",
   thalikettuVenue: "Vadakkunnathan",
   weddingVenue: "PTR Mahal, Kattungachira, Irinjalakuda", weddingTime: "From 10:00 AM",
-  receptionVenue: "PCK Auditorium, Vellangallur", receptionTime: "Time to be updated",
+  receptionVenue: "PCK Auditorium, Vellangallur", receptionTime: "5:30 PM – 9:30 PM",
   whatsappNumber: "919567435359",
   websiteUrl: "https://manishpisharody.github.io/mahesh-aparana-wedding/",
   mapLinks: {
